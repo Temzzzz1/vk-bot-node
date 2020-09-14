@@ -76,7 +76,6 @@ updatesProvider.getUpdates(async updates => {
         let from_id = object.from_id
         let peer_id = object.peer_id
         let message = object.text
-        let group_id = updates[0].group_id
         let type = updates[0].type
 
         if (type != 'message_new') return
