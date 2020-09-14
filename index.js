@@ -11,6 +11,7 @@ let api = new VKApi({
     logger: new ConsoleLogger()
 })
 
+
 client.commands = new Discord.Collection();   
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
