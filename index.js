@@ -1,4 +1,5 @@
 require('dotenv').config()
+require('newrelic');
 
 const { prefix } = require('./config.json');
 const fs = require('fs');
