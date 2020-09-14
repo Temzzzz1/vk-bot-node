@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const { prefix, token, db_name, db_password, db_username } = require('./config.json');
+const { prefix } = require('./config.json');
 const fs = require('fs');
 const {VKApi, ConsoleLogger, BotsLongPollUpdatesProvider} = require('node-vk-sdk')
 const Discord = require('discord.js');
