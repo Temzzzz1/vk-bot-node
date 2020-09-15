@@ -131,4 +131,6 @@ updatesProvider.getUpdates(async updates => {
 
 var http = require('http')
 
-http.createServer().listen(process.env.PORT || 5000)
+http.createServer( (request, response) => {
+    response.end();
+}).listen(process.env.PORT || 5000)
