@@ -40,7 +40,7 @@ module.exports = {
 
                 console.log(homeworks)
                 if (dayjs().isAfter(dayjs(hw.date))) {
-                    await Homework.deleteOne({ date: hw.date})
+                    //await Homework.deleteOne({ date: hw.date})
                 }
 
                 data += hw.title.firstLetterCaps() + " | до " + 
