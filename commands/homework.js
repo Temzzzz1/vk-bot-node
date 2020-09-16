@@ -34,11 +34,13 @@ module.exports = {
                 })
             }
 
-            if (dayjs().isAfter(dayjs(hw.date))) {
-                await Homework.deleteOne({ date: hw.date})
-            }
+            
 
             homeworks.forEach(async hw => {
+
+                if (dayjs().isAfter(dayjs(hw.date))) {
+                    await Homework.deleteOne({ date: hw.date})
+                }
 
                 data += hw.title.firstLetterCaps() + " | до " + 
                 dayjs(hw.date).format('DD.MM.YYYY') + "\n" + hw.description + "\n\n"
