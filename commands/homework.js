@@ -39,7 +39,7 @@ module.exports = {
             homeworks.forEach(async hw => {
 
                 console.log(homeworks)
-                if (dayjs().isAfter(dayjs(hw.date))) {
+                if (dayjs().isAfter(dayjs(hw.date), 'day')) {
                     await Homework.deleteOne({ date: hw.date })
                 } else {
                     data += hw.title.firstLetterCaps() + " | до " + 
