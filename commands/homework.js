@@ -38,7 +38,8 @@ module.exports = {
 
             homeworks.forEach(async hw => {
 
-                if (dayjs(hw.date).isBefore(dayjs())) {
+                console.log(homeworks)
+                if (dayjs().isAfter(dayjs(hw.date))) {
                     await Homework.deleteOne({ date: hw.date})
                 }
 
