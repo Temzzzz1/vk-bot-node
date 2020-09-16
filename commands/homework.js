@@ -33,11 +33,12 @@ module.exports = {
                     random_id: 0
                 })
             }
-            homeworks.forEach(async hw => {
 
-                if (dayjs().isAfter(dayjs(hw.date))) {
-                    await Homework.deleteOne({ date: hw.date})
-                }
+            if (dayjs().isAfter(dayjs(hw.date))) {
+                await Homework.deleteOne({ date: hw.date})
+            }
+
+            homeworks.forEach(async hw => {
 
                 data += hw.title.firstLetterCaps() + " | до " + 
                 dayjs(hw.date).format('DD.MM.YYYY') + "\n" + hw.description + "\n\n"
