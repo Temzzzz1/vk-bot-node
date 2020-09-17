@@ -6,20 +6,30 @@ const fs = require('fs');
 module.exports = {
     name: 'расписание',
     description: 'покажу расписание ТУСУРа',
-    logo: "⌚",
+    logo: "🎓",
     aliases: ['расп', 'р', ' р', ' расписание', 'h'],
     usage: "[дата]",
     fullDescription: "введи эту команду, чтобы получить доступ к расписанию группу. Если не вводить дополнительные параметры, то бот покажет расписание на сегодняшний день. Ты также можешь использовать даты: сегодня, завтра, послезавтра, 23.09, 14.10.2020",
     async execute(api, object, args) {
 
-        const id = await Group.findOne({ user_id: object.from_id }).lean()
-        if (!id) {
-            return api.messagesSend({
-                peer_id: object.peer_id,
-                message: 'Я не нашел группу привязанную к тебе\nПопробуй: !запомнить (группа)',
-                random_id: 0
-            })
+        
+        if (!object.groupFromRemind) {
+            id = await Group.findOne({ user_id: object.from_id }).lean()
+            
+            if (!id) {
+                return api.messagesSend({
+                    peer_id: object.peer_id,
+                    message: 'Я не нашел группу привязанную к тебе\nПопробуй: !запомнить (группа)',
+                    random_id: 0
+                })
+            }
+        } else {
+            id = {
+                group_id: object.groupFromRemind
+            }
         }
+        console.log(id)
+        
 
         dayjs.extend(utc)
         var customParseFormat = require('dayjs/plugin/customParseFormat')

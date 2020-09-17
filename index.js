@@ -35,6 +35,32 @@ try {
     console.log(e)
 }
 
+const timetable = require('./commands/timetable')
+const Remind = require('./models/reminds')
+setInterval(async () => {
+    const reminds = await Remind.find({}).lean()
+    reminds.forEach(async remind => {
+        
+        
+        if (dayjs(remind.date).unix() <= dayjs().unix()) {
+            object = {
+                peer_id: remind.peer_id,
+                groupFromRemind: remind.group_id
+            }
+
+            timetable.execute(api, object, ['сегодня'])
+
+            await Remind.findOneAndUpdate({ peer_id: remind.peer_id}, {
+                date: dayjs(remind.date)
+                        .add(1, 'day')
+                        .utc().utcOffset(7)
+                        .format()
+            })
+        }
+        
+        
+    });
+}, 10*1000);
 
 var schedule = require('node-schedule');
  
@@ -59,9 +85,6 @@ schedule.scheduleJob(rule, async function() {
               })
         })
     })
-
-
-    
 });
 
 
@@ -129,7 +152,9 @@ updatesProvider.getUpdates(async updates => {
     }
 })
 
-var http = require('http')
+var http = require('http');
+const remind = require('./commands/remind');
+const dayjs = require('dayjs');
 
 http.createServer( (request, response) => {
     response.end();
