@@ -35,7 +35,7 @@ module.exports = {
         var customParseFormat = require('dayjs/plugin/customParseFormat')
         dayjs.extend(customParseFormat)
 
-        DATE = dayjs(args[0] , 'H.m').utc().utcOffset(7).format()
+        DATE = dayjs(args[0] , 'H.m').utc().utcOffset(7).add(1, 'day').format()
 
         if (dayjs(DATE).isValid() == false) {
             return api.messagesSend({
