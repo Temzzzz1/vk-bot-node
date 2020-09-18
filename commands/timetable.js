@@ -11,11 +11,10 @@ module.exports = {
     usage: "[дата]",
     fullDescription: "введи эту команду, чтобы получить доступ к расписанию группу. Если не вводить дополнительные параметры, то бот покажет расписание на сегодняшний день. Ты также можешь использовать даты: сегодня, завтра, послезавтра, 23.09, 14.10.2020",
     async execute(api, object, args) {
-
-        
+ 
         if (!object.groupFromRemind) {
             id = await Group.findOne({ user_id: object.from_id }).lean()
-            
+            console.log(id)
             if (!id) {
                 return api.messagesSend({
                     peer_id: object.peer_id,
@@ -28,7 +27,7 @@ module.exports = {
                 group_id: object.groupFromRemind
             }
         }
-        console.log(id)
+        
         
 
         dayjs.extend(utc)
