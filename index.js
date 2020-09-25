@@ -38,6 +38,8 @@ try {
 const timetable = require('./commands/timetable')
 const Remind = require('./models/reminds')
 setInterval(async () => {
+
+    if (dayjs().day() == 0) return
     const reminds = await Remind.find({}).lean()
     reminds.forEach(async remind => {
         
