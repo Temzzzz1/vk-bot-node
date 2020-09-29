@@ -1,7 +1,6 @@
 module.exports = {
 	name: 'reload',
 	description: 'перезагружу комманду',
-    args: true,
     guildOnly: true,
 	execute(api, object, args, client) {
 
