@@ -3,6 +3,9 @@ const dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 const fs = require('fs');
 
+
+
+
 module.exports = {
     name: 'расписание',
     description: 'покажу расписание ТУСУРа',
@@ -11,10 +14,9 @@ module.exports = {
     usage: "[дата]",
     fullDescription: "введи эту команду, чтобы получить доступ к расписанию группу. Если не вводить дополнительные параметры, то бот покажет расписание на сегодняшний день. Ты также можешь использовать даты: сегодня, завтра, послезавтра, 23.09, 14.10.2020",
     async execute(api, object, args) {
- 
+
         if (!object.groupFromRemind) {
             id = await Group.findOne({ user_id: object.from_id }).lean()
-            console.log(id)
             if (!id) {
                 return api.messagesSend({
                     peer_id: object.peer_id,
@@ -27,15 +29,15 @@ module.exports = {
                 group_id: object.groupFromRemind
             }
         }
-        
-        
+
+
 
         dayjs.extend(utc)
         var customParseFormat = require('dayjs/plugin/customParseFormat')
         dayjs.extend(customParseFormat)
         formatedDate = dayjs(args[0] + ".2020", 'DD.MM.YYYY').format('DD-MM-YYYY')
         DATE = dayjs(args[0] + ".2020", 'DD.MM.YYYY').format('DD.MM.YYYY')
-        
+
         if (dayjs(formatedDate, "DD.MM.YYYY").isValid() == false) {
             switch (args[0]) {
                 case 'сегодня':
@@ -66,7 +68,10 @@ module.exports = {
 
         fs.readFile("tusur.json", "utf8", async (error, data) => {
             table = JSON.parse(data)
-            Lessons = "🔶 " + id.group_id + " | " + DATE + " 🔶\n\n"
+            UnsortedLessons = new Map()
+            Lessons = []
+
+            Lessons.push("🔶 " + id.group_id + " | " + DATE + " 🔶\n\n")
 
             table.faculties.find(faculty => {
                 return faculty.groups.find(group => {
@@ -75,17 +80,30 @@ module.exports = {
 
                             if (lesson.date.split(',').find(time => time == DATE)) {
 
-                                Lessons += "🔹 " + lesson.subject + "\n" + lesson.time.start
-                                    + " - " + lesson.time.end + " | " + lesson.type + "\n"
-                                    + timetableUtil(lesson.audiences) + " | " + timetableUtil(lesson.teachers) + "\n\n"
+                                lessonText = `🔹 ${lesson.subject}\n${lesson.time.start} - ${lesson.time.end} | ${lesson.type}\n${timetableUtil(lesson.audiences)} | ${timetableUtil(lesson.teachers)}\n\n`
+
+                                UnsortedLessons.set(lesson.time.start, lessonText)
+
+
                             }
                         })
                 })
             })
 
+            sortedLessons = Array.from(UnsortedLessons
+                .entries())
+                .sort((a, b) => (dayjs(a[0], "H:mm").unix() - dayjs(b[0], "H:mm").unix()))
+
+            sortedLessons.forEach(lesson => {
+                Lessons.push(lesson[1])
+            })
+
+
+
+
             api.messagesSend({
                 peer_id: object.peer_id,
-                message: Lessons,
+                message: Lessons.join(''),
                 random_id: 0
             })
 
