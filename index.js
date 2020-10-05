@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const { prefix } = require('./config.json');
 const fs = require('fs');
-const {VKApi, ConsoleLogger, BotsLongPollUpdatesProvider} = require('node-vk-sdk')
+const { VKApi, ConsoleLogger, BotsLongPollUpdatesProvider } = require('node-vk-sdk')
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const mongoose = require('mongoose')
@@ -12,20 +12,20 @@ let api = new VKApi({
 })
 
 
-client.commands = new Discord.Collection();   
+client.commands = new Discord.Collection();
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	client.commands.set(command.name, command);
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.name, command);
 }
- 
+
 let updatesProvider = new BotsLongPollUpdatesProvider(api, process.env.VK_GROUP)
 console.log('Bot starts...')
 
 try {
-    mongoose.connect('mongodb+srv://'+process.env.DB_USER+':'+process.env.DB_PASSWORD+'@cluster0.be5s0.mongodb.net/'+process.env.DB_NAME, {
+    mongoose.connect('mongodb+srv://' + process.env.DB_USER + ':' + process.env.DB_PASSWORD + '@cluster0.be5s0.mongodb.net/' + process.env.DB_NAME, {
         useNewUrlParser: true,
         useFindAndModify: false,
         useUnifiedTopology: true,
@@ -37,39 +37,40 @@ try {
 
 const timetable = require('./commands/timetable')
 const Remind = require('./models/reminds')
-setInterval(async () => {
 
-    if (dayjs().day() == 0) return
-    const reminds = await Remind.find({}).lean()
-    reminds.forEach(async remind => {
-        
-        
-        if (dayjs(remind.date).unix() <= dayjs().unix()) {
-            object = {
-                peer_id: remind.peer_id,
-                groupFromRemind: remind.group_id
-            }
+if (dayjs().day() == 0) {
+    setInterval(async () => {
 
-            timetable.execute(api, object, ['сегодня'])
+        const reminds = await Remind.find({}).lean()
+        reminds.forEach(async remind => {
 
-            await Remind.findOneAndUpdate({ peer_id: remind.peer_id}, {
-                date: dayjs(remind.date)
+            if (dayjs(remind.date).unix() <= dayjs().unix()) {
+                object = {
+                    peer_id: remind.peer_id,
+                    groupFromRemind: remind.group_id
+                }
+
+                timetable.execute(api, object, ['сегодня'])
+
+                await Remind.findOneAndUpdate({ peer_id: remind.peer_id }, {
+                    date: dayjs(remind.date)
                         .add(1, 'day')
                         .utc().utcOffset(7)
                         .format()
-            })
-        }
-        
-        
-    });
-}, 10*1000);
+                })
+            }
+
+        });
+    }, 10 * 1000);
+}
+
 
 var schedule = require('node-schedule');
- 
+
 var rule = new schedule.RecurrenceRule();
 rule.minute = 1
- 
-schedule.scheduleJob(rule, async function() {
+
+schedule.scheduleJob(rule, async function () {
     const http = require("https")
     const url = "https://timetable.tusur.ru/api/v2/raspisanie_vuzov";
 
@@ -84,17 +85,17 @@ schedule.scheduleJob(rule, async function() {
             fs.writeFile('tusur.json', body, function (err) {
                 if (err) throw err;
                 console.log('Timetable parsed!');
-              })
+            })
         })
     })
 });
 
 
- 
+
 updatesProvider.getUpdates(async updates => {
 
     try {
-        
+
         if (updates.length == 0) return
 
         let object = updates[0].object.message
@@ -109,10 +110,10 @@ updatesProvider.getUpdates(async updates => {
 
         const args = message.slice(prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
-        
+
         // Проверяем и подключаем команду с директории
-	    const command = client.commands.get(commandName)
-                || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+        const command = client.commands.get(commandName)
+            || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
         // Если команда не найдена, сворачиваем все
         if (!command) return console.log('Command not found');
@@ -120,10 +121,10 @@ updatesProvider.getUpdates(async updates => {
         // Если команда только для админов
         if (command.guildOnly && from_id != 199690736) {
             return api.messagesSend({
-                        peer_id: peer_id,
-                        message: 'Прости, но эта команда только для Темы!',
-                        random_id: 0
-                    })
+                peer_id: peer_id,
+                message: 'Прости, но эта команда только для Темы!',
+                random_id: 0
+            })
         }
 
         // Если аргументов нет
@@ -136,10 +137,10 @@ updatesProvider.getUpdates(async updates => {
 
             // Отправляем ответ
             return api.messagesSend({
-                        peer_id: peer_id,
-                        message: reply,
-                        random_id: 0
-                    })
+                peer_id: peer_id,
+                message: reply,
+                random_id: 0
+            })
         }
 
         try {
@@ -158,6 +159,6 @@ var http = require('http');
 const remind = require('./commands/remind');
 const dayjs = require('dayjs');
 
-http.createServer( (request, response) => {
+http.createServer((request, response) => {
     response.end();
 }).listen(process.env.PORT || 5000)
