@@ -6,6 +6,7 @@ const { VKApi, ConsoleLogger, BotsLongPollUpdatesProvider } = require('node-vk-s
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const mongoose = require('mongoose')
+const dayjs = require('dayjs');
 let api = new VKApi({
     token: process.env.VK_TOKEN,
     logger: new ConsoleLogger()
@@ -157,7 +158,7 @@ updatesProvider.getUpdates(async updates => {
 
 var http = require('http');
 const remind = require('./commands/remind');
-const dayjs = require('dayjs');
+
 
 http.createServer((request, response) => {
     response.end();
