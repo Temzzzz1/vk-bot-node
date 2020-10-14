@@ -39,31 +39,31 @@ try {
 const timetable = require('./commands/timetable')
 const Remind = require('./models/reminds')
 
-if (dayjs().day() != 0) {
-    setInterval(async () => {
 
-        const reminds = await Remind.find({}).lean()
-        reminds.forEach(async remind => {
+setInterval(async () => {
 
-            if (dayjs(remind.date).unix() <= dayjs().unix()) {
-                object = {
-                    peer_id: remind.peer_id,
-                    groupFromRemind: remind.group_id
-                }
+    const reminds = await Remind.find({}).lean()
+    reminds.forEach(async remind => {
 
-                timetable.execute(api, object, ['сегодня'])
-
-                await Remind.findOneAndUpdate({ peer_id: remind.peer_id }, {
-                    date: dayjs(remind.date)
-                        .add(1, 'day')
-                        .utc().utcOffset(7)
-                        .format()
-                })
+        if (dayjs(remind.date).unix() <= dayjs().unix() && dayjs().day() != 0) {
+            object = {
+                peer_id: remind.peer_id,
+                groupFromRemind: remind.group_id
             }
 
-        });
-    }, 30 * 1000);
-}
+            timetable.execute(api, object, ['сегодня'])
+
+            await Remind.findOneAndUpdate({ peer_id: remind.peer_id }, {
+                date: dayjs(remind.date)
+                    .add(1, 'day')
+                    .utc().utcOffset(7)
+                    .format()
+            })
+        }
+
+    });
+}, 30 * 1000);
+
 
 
 var schedule = require('node-schedule');
