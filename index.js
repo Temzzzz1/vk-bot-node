@@ -45,14 +45,15 @@ setInterval(async () => {
     const reminds = await Remind.find({}).lean()
     reminds.forEach(async remind => {
 
-        if (dayjs(remind.date).unix() <= dayjs().unix() && dayjs().day() != 0) {
+        if (dayjs(remind.date).unix() <= dayjs().unix() ) {
             object = {
                 peer_id: remind.peer_id,
                 groupFromRemind: remind.group_id
             }
-
-            timetable.execute(api, object, ['сегодня'])
-
+            if (dayjs().day() != 0) {
+                timetable.execute(api, object, ['сегодня'])
+            }
+            
             await Remind.findOneAndUpdate({ peer_id: remind.peer_id }, {
                 date: dayjs(remind.date)
                     .add(1, 'day')
